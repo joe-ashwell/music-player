@@ -1,10 +1,11 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
   faAngleRight,
   faAngleLeft,
+  faPause,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Player = ({ currentSong, isPlaying, setIsPlaying }) => {
@@ -21,12 +22,41 @@ const Player = ({ currentSong, isPlaying, setIsPlaying }) => {
     }
   };
 
+  const timeUpdateHandler = (e) => {
+    const currentTime = e.target.currentTime;
+    const duration = e.target.duration;
+    setSongInfo({ ...songInfo, currentTime: currentTime, duration: duration });
+  };
+
+  const getTime = (time) => {
+    return (
+      Math.floor(time / 60) + ":" + ("0" + Math.floor(time % 60)).slice(-2)
+    );
+  };
+
+  const dragHandler = (e) => {
+    setSongInfo({ ...songInfo, currentTime: e.target.value });
+    audioRef.current.currentTime = e.target.value;
+  };
+
+  // State
+  const [songInfo, setSongInfo] = useState({
+    currentTime: 0,
+    duration: 0,
+  });
+
   return (
     <PlayerDiv>
       <TimeControlDiv>
-        <p>Start time</p>
-        <input type="range" />
-        <p>End time</p>
+        <p>{getTime(songInfo.currentTime)}</p>
+        <input
+          type="range"
+          min="0"
+          max={songInfo.duration}
+          value={songInfo.currentTime}
+          onChange={dragHandler}
+        />
+        <p>{getTime(songInfo.duration)}</p>
       </TimeControlDiv>
       <PlayControlDiv>
         <FontAwesomeIcon className="left" size="2x" icon={faAngleLeft} />
@@ -34,11 +64,19 @@ const Player = ({ currentSong, isPlaying, setIsPlaying }) => {
           className="play"
           onClick={playSongHandler}
           size="2x"
-          icon={faPlay}
+          icon={isPlaying ? faPause : faPlay}
         />
         <FontAwesomeIcon className="right" size="2x" icon={faAngleRight} />
       </PlayControlDiv>
-      <audio ref={audioRef} src={currentSong.audio}></audio>
+      <audio
+        onTimeUpdate={timeUpdateHandler}
+        onLoadedMetadata={timeUpdateHandler}
+        ref={audioRef}
+        src={currentSong.audio}
+      ></audio>
+      {/* onTimeUpdate is a special attribute for the audio tag 
+          onLoadedMetaData is also a special attribute for the audio tag
+      */}
     </PlayerDiv>
   );
 };
@@ -59,7 +97,7 @@ const TimeControlDiv = styled.div`
 
   > input {
     width: 100%;
-    padding: 1rem 2rem;
+    padding: 1rem 0;
   }
 
   > p {
