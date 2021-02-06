@@ -1,10 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 
-const LibrarySong = ({ song }) => {
-  console.log(song);
+const LibrarySong = ({ song, songs, setCurrentSong, id }) => {
+  const songSelectHandler = () => {
+    const selectedSong = songs.filter((state) => state.id === id);
+    // needed to get the first element because filter returns an array so it becomes nested in setCurrentSong
+    setCurrentSong(selectedSong[0]);
+  };
+
   return (
-    <LibrarySongDiv>
+    <LibrarySongDiv onClick={songSelectHandler}>
       <img alt={song.name} src={song.cover}></img>
       <SongDescriptionDiv>
         <h3>{song.name}</h3>
