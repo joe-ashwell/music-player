@@ -1,15 +1,45 @@
 import React from "react";
 import styled from "styled-components";
+import { playAudio } from "../util";
 
-const LibrarySong = ({ song, songs, setCurrentSong, id }) => {
+const LibrarySong = ({
+  id,
+  song,
+  songs,
+  setSongs,
+  currentSong,
+  setCurrentSong,
+  audioRef,
+  isPlaying,
+}) => {
   const songSelectHandler = () => {
-    const selectedSong = songs.filter((state) => state.id === id);
-    // needed to get the first element because filter returns an array so it becomes nested in setCurrentSong
-    setCurrentSong(selectedSong[0]);
+    setCurrentSong(song);
+    // Check if the current song state is playing or if it's paused.
+    // Add active state
+    const newSongs = songs.map((song) => {
+      if (song.id === id) {
+        return {
+          ...song,
+          active: true,
+        };
+      } else {
+        return {
+          ...song,
+          active: false,
+        };
+      }
+    });
+    // Apply the active songs through setSongs
+    setSongs(newSongs);
+    playAudio(isPlaying, audioRef);
   };
 
   return (
-    <LibrarySongDiv onClick={songSelectHandler}>
+    <LibrarySongDiv
+      onClick={songSelectHandler}
+      currentSong={currentSong}
+      song={song}
+    >
       <img alt={song.name} src={song.cover}></img>
       <SongDescriptionDiv>
         <h3>{song.name}</h3>
@@ -35,6 +65,12 @@ const LibrarySongDiv = styled.div`
   > h3 {
     padding: 1rem;
   }
+
+  ${(props) =>
+    props.song.active &&
+    `
+    background-color: #e8d4fe;
+`}
 `;
 
 const SongDescriptionDiv = styled.div`
