@@ -14,6 +14,7 @@ function App() {
   const [songInfo, setSongInfo] = useState({
     currentTime: 0,
     duration: 0,
+    animationPercentage: 0,
   });
   // -> this basically grabs the first song in the list and sets it as current song so there's one ready to go on load
   const [currentSong, setCurrentSong] = useState(songs[0]);
@@ -23,7 +24,14 @@ function App() {
   const timeUpdateHandler = (e) => {
     const currentTime = e.target.currentTime;
     const duration = e.target.duration;
-    setSongInfo({ ...songInfo, currentTime: currentTime, duration: duration });
+    let animation = Math.round((currentTime / duration) * 100);
+
+    setSongInfo({
+      ...songInfo,
+      currentTime: currentTime,
+      duration: duration,
+      animationPercentage: animation,
+    });
   };
 
   return (

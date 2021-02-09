@@ -75,19 +75,30 @@ const Player = ({
     }
     playAudio(isPlaying, audioRef);
   };
+  // Add styles
+  const trackAnim = {
+    transform: `translateX(${songInfo.animationPercentage}%)`,
+  };
 
   return (
     <PlayerDiv>
       <TimeControlDiv>
         <p>{getTime(songInfo.currentTime)}</p>
-        <input
-          type="range"
-          min="0"
-          // Because the song info doesn't load instantly, the duration can be undefined/null. So default 0.
-          max={songInfo.duration || 0}
-          value={songInfo.currentTime}
-          onChange={dragHandler}
-        />
+        <TrackDiv
+          style={{
+            background: `linear-gradient(to right, ${currentSong.color[0]}, ${currentSong.color[1]})`,
+          }}
+        >
+          <input
+            type="range"
+            min="0"
+            // Because the song info doesn't load instantly, the duration can be undefined/null. So default 0.
+            max={songInfo.duration || 0}
+            value={songInfo.currentTime}
+            onChange={dragHandler}
+          />
+          <AnimateTrackDiv style={trackAnim}></AnimateTrackDiv>
+        </TrackDiv>
         <p>{songInfo.duration ? getTime(songInfo.duration) : `0:00`}</p>
       </TimeControlDiv>
       <PlayControlDiv>
@@ -126,14 +137,42 @@ const TimeControlDiv = styled.div`
   align-items: center;
   justify-content: space-between;
 
-  > input {
-    width: 100%;
-    padding: 1rem 0;
-  }
-
   > p {
     padding: 1rem;
   }
+`;
+
+const TrackDiv = styled.div`
+  width: 100%;
+  height: 0.5rem;
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+
+  > input {
+    width: 100%;
+    -webkit-appearance: none;
+    background-color: transparent;
+    cursor: pointer;
+    &:focus {
+      outline: none;
+    }
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 16px;
+    }
+  }
+`;
+
+const AnimateTrackDiv = styled.div`
+  background-color: #e3e3e3;
+  width: 100%;
+  height: 0.5rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
 `;
 
 const PlayControlDiv = styled.div`
