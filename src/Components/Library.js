@@ -35,7 +35,7 @@ const LibraryDiv = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: 20rem;
+  width: 25rem;
   height: 100%;
   box-shadow: 2px 2px 50px rgb(200, 200, 200);
   overflow: auto;
@@ -48,7 +48,16 @@ const LibraryDiv = styled.div`
     `
     transform: translateX(0);
     opacity: 1;
+    background-color: white;
   `}
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
+  > h2 {
+    padding: 2rem;
+  }
 `;
 
 export default Library;

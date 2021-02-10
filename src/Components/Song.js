@@ -28,7 +28,13 @@ const SongContainerDiv = styled.div`
   }
 
   > h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 768px) {
+    > img {
+      width: 60%;
+    }
   }
 `;
 

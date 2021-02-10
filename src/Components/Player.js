@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
-import { playAudio } from "../util";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -20,10 +19,10 @@ const Player = ({
   songs,
   setSongs,
 }) => {
-  // To initiate change when the user skips song
-  useEffect(() => {
+  const activeLibraryHandler = (nextPrev) => {
+    // To initiate change when the user skips song
     const newSongs = songs.map((song) => {
-      if (song.id === currentSong.id) {
+      if (song.id === nextPrev.id) {
         return {
           ...song,
           active: true,
@@ -37,8 +36,8 @@ const Player = ({
     });
     // Apply the active songs through setSongs
     setSongs(newSongs);
-    // This is invoked whenever the current song is updated.
-  }, [currentSong]);
+  };
+
   // Event Handlers
   const playSongHandler = () => {
     if (isPlaying) {
@@ -61,19 +60,27 @@ const Player = ({
     audioRef.current.currentTime = e.target.value;
   };
 
-  const skipTrackHandler = (direction) => {
+  const skipTrackHandler = async (direction) => {
     let currentIndex = songs.findIndex((song) => song.id === currentSong.id);
     if (direction === "skip-forward") {
-      setCurrentSong(songs[(currentIndex += 1)] || songs[0]);
+      await setCurrentSong(songs[(currentIndex += 1)] || songs[0]);
+      activeLibraryHandler(songs[(currentIndex += 1)] || songs[0]);
     } else if (direction === "skip-back") {
       if (currentIndex - 1 === -1) {
-        setCurrentSong(songs[songs.length - 1]);
-        playAudio(isPlaying, audioRef);
+        await setCurrentSong(songs[songs.length - 1]);
+        activeLibraryHandler(songs[songs.length - 1]);
+        if (isPlaying) audioRef.current.play();
         return;
       }
-      setCurrentSong(songs[(currentIndex -= 1)] || songs[songs.length - 1]);
+      await setCurrentSong(
+        songs[(currentIndex -= 1)] || songs[songs.length - 1]
+      );
+      activeLibraryHandler(
+        songs[(currentIndex -= 1)] || songs[songs.length - 1]
+      );
     }
-    playAudio(isPlaying, audioRef);
+    // playAudio(isPlaying, audioRef);
+    if (isPlaying) audioRef.current.play();
   };
   // Add styles
   const trackAnim = {
@@ -140,6 +147,10 @@ const TimeControlDiv = styled.div`
   > p {
     padding: 1rem;
   }
+
+  @media (max-width: 768px) {
+    width: 80%;
+  }
 `;
 
 const TrackDiv = styled.div`
@@ -184,6 +195,10 @@ const PlayControlDiv = styled.div`
 
   > svg {
     cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    width: 60%;
   }
 `;
 

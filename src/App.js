@@ -5,6 +5,7 @@ import Player from "./Components/Player";
 import SongData from "./data";
 import Library from "./Components/Library";
 import "./Styles/App.css";
+import styled from "styled-components";
 
 function App() {
   // Ref
@@ -34,8 +35,13 @@ function App() {
     });
   };
 
+  const songEndHandler = async () => {
+    let currentIndex = songs.findIndex((song) => song.id === currentSong.id);
+    await setCurrentSong(songs[(currentIndex += 1)] || songs[0]);
+    if (isPlaying) audioRef.current.play();
+  };
   return (
-    <div>
+    <AppDiv className="App" libraryStatus={libraryStatus}>
       <Nav libraryStatus={libraryStatus} setLibraryStatus={setLibraryStatus} />
       <Song currentSong={currentSong} />
       <Player
@@ -63,12 +69,23 @@ function App() {
         onLoadedMetadata={timeUpdateHandler}
         ref={audioRef}
         src={currentSong.audio}
+        onEnded={songEndHandler}
       ></audio>
       {/* onTimeUpdate is a special attribute for the audio tag 
           onLoadedMetaData is also a special attribute for the audio tag
       */}
-    </div>
+    </AppDiv>
   );
 }
+
+const AppDiv = styled.div`
+  transition: all 0.5s ease;
+
+  ${(props) =>
+    props.libraryStatus &&
+    `
+    margin-left: 30% !important;
+  `}
+`;
 
 export default App;

@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { playAudio } from "../util";
 
 const LibrarySong = ({
   id,
@@ -12,8 +11,8 @@ const LibrarySong = ({
   audioRef,
   isPlaying,
 }) => {
-  const songSelectHandler = () => {
-    setCurrentSong(song);
+  const songSelectHandler = async () => {
+    await setCurrentSong(song);
     // Check if the current song state is playing or if it's paused.
     // Add active state
     const newSongs = songs.map((song) => {
@@ -31,7 +30,7 @@ const LibrarySong = ({
     });
     // Apply the active songs through setSongs
     setSongs(newSongs);
-    playAudio(isPlaying, audioRef);
+    if (isPlaying) audioRef.current.play();
   };
 
   return (
@@ -54,8 +53,9 @@ const LibrarySongDiv = styled.div`
   align-items: center;
   padding: 1rem 2rem;
   cursor: pointer;
+  transition: background 0.5s ease;
   &:hover {
-    background-color: #e8d4fe;
+    background-color: #f2e6ff;
   }
 
   > img {
@@ -77,11 +77,14 @@ const SongDescriptionDiv = styled.div`
   padding-left: 1rem;
 
   > h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    color: #121212;
+    margin-bottom: 0.25rem;
   }
 
   > h4 {
-    font-size: 0.7rem;
+    font-size: 1rem;
+    margin-top: 0.25rem;
   }
 `;
 
